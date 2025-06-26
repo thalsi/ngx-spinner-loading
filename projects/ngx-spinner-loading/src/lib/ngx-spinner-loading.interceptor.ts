@@ -1,23 +1,22 @@
-import { Injectable } from '@angular/core';
+import { inject } from '@angular/core';
 import {
-    HttpInterceptor,
+    HttpEvent,
+    HttpInterceptorFn,
     HttpRequest,
-    HttpHandler,
-    HttpEvent
+    HttpHandlerFn
 } from '@angular/common/http';
 import { Observable, finalize } from 'rxjs';
 import { NgxSpinnerLoadingService } from './ngx-spinner-loading.service';
 
-@Injectable()
-export class NgxSpinnerLoadingInterceptor implements HttpInterceptor {
+export const NgxSpinnerLoadingInterceptor: HttpInterceptorFn = (
+    req: HttpRequest<any>,
+    next: HttpHandlerFn
+): Observable<HttpEvent<any>> => {
+    const spinner = inject(NgxSpinnerLoadingService);
 
-    constructor(private spinner: NgxSpinnerLoadingService) { }
+    spinner.show();
 
-    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        this.spinner.show();
-
-        return next.handle(req).pipe(
-            finalize(() => this.spinner.hide())
-        );
-    }
-}
+    return next(req).pipe(
+        finalize(() => spinner.hide())
+    );
+};
