@@ -1,24 +1,30 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { Injectable, Signal, computed, signal } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
 export class NgxSpinnerLoadingService {
-  private loadingSubject = new BehaviorSubject(false);
-  loading$ = this.loadingSubject.asObservable();
-  private count = 0;
+  private loading = signal(false);
+  private config = signal<any>({});
 
-  show(): void {
-    this.count++;
-    this.loadingSubject.next(true);
+  show(config: any = {}) {
+    this.config.set(config);
+    this.loading.set(true);
+    console.log('show');
+    
+    if (config.timeout) {
+      setTimeout(() => this.hide(), config.timeout);
+    }
   }
 
-  hide(): void {
-    this.count = Math.max(0, this.count - 1);
-    this.loadingSubject.next(this.count > 0);
+  hide() {
+    this.loading.set(false);
+      console.log('hide');
   }
 
-  reset(): void {
-    this.count = 0;
-    this.loadingSubject.next(false);
+  isLoading(): Signal<boolean> {
+    return computed(() => this.loading());
+  }
+
+  getConfig(): Signal<any> {
+    return computed(() => this.config());
   }
 }

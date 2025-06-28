@@ -1,91 +1,72 @@
-import { Component, Input } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, computed, effect, inject, Input, signal } from '@angular/core';
 import { NgxSpinnerLoadingService } from './ngx-spinner-loading.service';
-import { Observable, Subscription } from 'rxjs';
+import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'ngx-spinner-loading',
+  selector: 'ngx-smart-loading',
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div  *ngIf="loading$ | async" class="overlay">
-      <div class="spinner" [ngClass]="type"
-           [ngStyle]="{
-             'border-top-color': color,
-             'width': size,
-             'height': size,
-             'border-width': borderWidth
-           }"></div>
+    <div *ngIf="isVisible()" class="smart-overlay" [ngClass]="modeClass()" [ngStyle]="spinnerStyle()">
+      <ng-container *ngIf="!template">
+        <div class="default-spinner" [ngStyle]="animationStyle()"></div>
+      </ng-container>
+      <ng-container *ngIf="template">
+        <ng-container *ngTemplateOutlet="template"></ng-container>
+      </ng-container>
     </div>
   `,
   styles: [`
-    .overlay {
+    .smart-overlay {
       position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
+      inset: 0;
+      background: rgba(0,0,0,0.3);
       display: flex;
-      align-items: center;
       justify-content: center;
-      background: rgba(0, 0, 0, 0.4);
+      align-items: center;
       z-index: 9999;
     }
-
-    .spinner {
+    .default-spinner {
+      border: 4px solid rgba(0,0,0,0.1);
+      border-top: 4px solid #000;
       border-radius: 50%;
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #3498db;
+      width: 40px;
+      height: 40px;
       animation: spin 1s linear infinite;
     }
-
-    .border {
-      border-style: solid;
-    }
-
-    .dot {
-      width: 20px;
-      height: 20px;
-      background-color: var(--dot-color, #3498db);
-      border-radius: 50%;
-      animation: dotBounce 1s infinite ease-in-out;
-    }
-
-    .pulse {
-      width: 20px;
-      height: 20px;
-      background-color: var(--dot-color, #3498db);
-      border-radius: 50%;
-      animation: pulseAnim 1s infinite ease-in-out;
-    }
-
     @keyframes spin {
       to { transform: rotate(360deg); }
-    }
-
-    @keyframes dotBounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-
-    @keyframes pulseAnim {
-      0% { transform: scale(0.9); opacity: 0.7; }
-      50% { transform: scale(1.2); opacity: 1; }
-      100% { transform: scale(0.9); opacity: 0.7; }
     }
   `]
 })
 export class NgxSpinnerLoadingComponent {
-  loading$: Observable<boolean>;
+  private service = inject(NgxSpinnerLoadingService);
+  config = this.service.getConfig();
 
-  @Input() color = '#3498db';         // default blue
-  @Input() size = '60px';             // width and height
-  @Input() type: 'default' | 'border' | 'dot' | 'pulse' = 'default';
+  @Input() template?: any;
 
-  get borderWidth(): string {
-    if (this.type === 'border' || this.type === 'default') return '8px';
-    return '0'; // dot/pulse don't use border
+  isVisible = this.service.isLoading;
+
+  modeClass = computed(() => {
+    const mode = this.config()?.mode || 'fullscreen';
+    return mode === 'fullscreen' ? 'smart-overlay' : '';
+  });
+
+  spinnerStyle = computed(() => ({
+    'background-color': 'transparent',
+    color: this.config()?.color || '#000',
+    width: this.getSize(),
+    height: this.getSize(),
+  }));
+
+  animationStyle = computed(() => ({
+    animationDuration: this.config()?.speed || '1s',
+  }));
+
+  private getSize(): string {
+    const size = this.config()?.size || 'medium';
+    if (size === 'small') return '20px';
+    if (size === 'large') return '60px';
+    return '40px';
   }
-
-  constructor(private spinnerService: NgxSpinnerLoadingService) { 
-    this.loading$ = this.spinnerService.loading$;
-  }
-
 }
