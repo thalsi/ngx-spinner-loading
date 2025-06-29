@@ -1,63 +1,119 @@
-# NgxSpinnerLoading
+# ⏳ ngx-spinner-loading
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.0.
+A lightweight, customizable Angular loading spinner package that supports global, section-based, inline loaders, and automatic HTTP integration via interceptors. Built with Angular standalone components and signal-based state.
 
-## Code scaffolding
+## 🚀 Features
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- ✅ Fullscreen, section-based, and inline loading modes
+- ✅ Auto show/hide during HTTP requests via Angular interceptor
+- ✅ Manual loader control using `NgxSpinnerLoadingService`
+- ✅ Customizable: size, color, animation type, speed, timeout
+- ✅ Use your own templates (`type="custom"`)
+- ✅ Lightweight, fast, no external dependencies
+- ✅ Compatible with Angular 15+ standalone APIs
 
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the library, run:
+## 📦 Installation
 
 ```bash
-ng build ngx-spinner-loading
+npm install ngx-spinner-loading
 ```
 
-This command will compile your project, and the build artifacts will be placed in the `dist/` directory.
+## 🧩 Usage
 
-### Publishing the Library
+### 1. Import Loader in Your App
 
-Once the project is built, you can publish your library by following these steps:
+```ts
+import { NgxSpinnerLoadingInterceptor } from 'ngx-spinner-loading';
 
-1. Navigate to the `dist` directory:
-   ```bash
-   cd dist/ngx-spinner-loading
-   ```
-
-2. Run the `npm publish` command to publish your library to the npm registry:
-   ```bash
-   npm publish
-   ```
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideHttpClient(withInterceptors([NgxSpinnerLoadingInterceptor]))
+  ]
+});
 ```
 
-## Running end-to-end tests
+### 2. Add Global Loader in Template
 
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
+```html
+<ngx-spinner-loader
+  type="spinner"
+  size="md"
+  color="#3498db"
+  mode="fullscreen"
+  [timeout]="5000"
+></ngx-spinner-loader>
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## ⚙️ Inputs – Customization
 
-## Additional Resources
+| Input      | Type                                                   | Default        | Description                                          |
+|------------|--------------------------------------------------------|----------------|------------------------------------------------------|
+| `type`     | `'spinner' \| 'bar' \| 'dots' \| 'circle' \| 'custom'` | `'spinner'`    | Loader animation type                                |
+| `size`     | `'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl'`                  | `'md'`         | Preset sizes for loader                              |
+| `color`    | `string`                                               | `#3498db`      | Loader color (hex or CSS value)                     |
+| `mode`     | `'fullscreen' \| 'section' \| 'inline'`                | `'fullscreen'` | Loader positioning                                   |
+| `timeout`  | `number`                                               | `undefined`    | Auto-hide loader after milliseconds                  |
+| `speed`    | `number`                                               | `1`            | Animation speed multiplier                           |
+| `manual`   | `boolean`                                              | `false`        | If true, always visible unless hidden manually       |
+| `zIndex`   | `number`                                               | `9999`         | z-index control for layering                         |
+| `template` | `<ng-template>`                                        | `undefined`    | Provide custom loader when `type="custom"`           |
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## 🧪 Example (Manual Control)
+
+```html
+<ngx-spinner-loader [manual]="true" type="bar" color="green"></ngx-spinner-loader>
+```
+
+```ts
+constructor(private loading: NgxSpinnerLoadingService) {}
+
+startLoad() {
+  this.loading.show();
+  setTimeout(() => this.loading.hide(), 3000);
+}
+```
+
+## 🔁 Auto HTTP Loading
+
+Use the provided HTTP interceptor to automatically show/hide loader for all requests:
+
+```ts
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { NgxSpinnerLoadingInterceptor } from 'ngx-spinner-loading';
+
+bootstrapApplication(AppComponent, {
+  providers: [
+    provideHttpClient(withInterceptors([NgxSpinnerLoadingInterceptor]))
+  ]
+});
+```
+
+## 🧩 Section Loader Directive (Optional)
+
+```html
+<div *ngxSpinnerLoading="isLoading">Dashboard Content...</div>
+```
+
+```ts
+ private isLoading:boolean=false;
+
+constructor(private loading: NgxSpinnerLoadingService) {}
+
+loadData() {
+  this.isLoading = true;
+  this.http.get(...).subscribe(() => this.isLoading = false);
+}
+```
+## 💡 Custom Template Example
+
+```html
+<ngx-spinner-loader type="custom">
+  <ng-template>
+    <div class="my-loader">⏳ Please wait...</div>
+  </ng-template>
+</ngx-spinner-loader>
+```
+
+## 📄 License
+
+[MIT © 2025 Thalsi](https://github.com/thalsi/ngx-spinner-loading/blob/master/LICENSE)

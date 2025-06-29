@@ -1,23 +1,26 @@
-import { Directive, inject, Input, TemplateRef, ViewContainerRef } from '@angular/core';
-import { NgxSpinnerLoadingService } from './ngx-spinner-loading.service';
+import {
+    Directive, Input, TemplateRef, ViewContainerRef, inject
+} from '@angular/core';
+import { NgxSpinnerLoadingLoadingService } from './ngx-spinner-loading.service';
 
 @Directive({
-    selector: '[NgxSpinnerLoading]',
+    selector: '[ngxSpinnerLoading]',
     standalone: true
 })
 export class NgxSpinnerLoadingDirective {
-    private tmpl = inject(TemplateRef);
+    private tmpl = inject(TemplateRef<unknown>);
     private vcr = inject(ViewContainerRef);
-    private loadingService = inject(NgxSpinnerLoadingService);
+    private service = inject(NgxSpinnerLoadingLoadingService);
 
-    @Input() set ngxSmartLoading(value: boolean) {
-        if (value) {
-            this.loadingService.show();
-            this.vcr.clear();
-            this.vcr.createEmbeddedView(this.tmpl);
+    @Input('ngxSpinnerLoading') set loading(condition: boolean) {
+        this.vcr.clear();
+
+        if (condition) {
+            this.service.show();
+            // Optionally show spinner markup here
         } else {
-            this.loadingService.hide();
-            this.vcr.clear();
+            this.service.hide();
+            this.vcr.createEmbeddedView(this.tmpl);
         }
     }
 }

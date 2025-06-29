@@ -1,28 +1,22 @@
-import { Injectable, Signal, computed, signal } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
-export class NgxSpinnerLoadingService {
-  private loading = signal(false);
-  private config = signal<any>({});
+export class NgxSpinnerLoadingLoadingService {
+  private loadingCount = signal(0);
+  isLoading = signal(false);
 
-  show(config: any = {}) {
-    this.config.set(config);
-    this.loading.set(true);
-    
-    if (config.timeout) {
-      setTimeout(() => this.hide(), config.timeout);
-    }
+  show(): void {
+    this.loadingCount.update((count) => count + 1);
+    this.isLoading.set(true);
   }
 
-  hide() {
-    this.loading.set(false);
+  hide(): void {
+    this.loadingCount.update((count) => Math.max(0, count - 1));
+    if (this.loadingCount() === 0) this.isLoading.set(false);
   }
 
-  isLoading(): Signal<boolean> {
-    return computed(() => this.loading());
-  }
-
-  getConfig(): Signal<any> {
-    return computed(() => this.config());
+  reset(): void {
+    this.loadingCount.set(0);
+    this.isLoading.set(false);
   }
 }

@@ -1,72 +1,75 @@
-import { Component, computed, effect, inject, Input, signal } from '@angular/core';
-import { NgxSpinnerLoadingService } from './ngx-spinner-loading.service';
-import { CommonModule } from '@angular/common';
+import {
+  Component, Input, TemplateRef, inject, effect,
+  ContentChild, OnInit
+} from '@angular/core';
+import { NgxSpinnerLoadingLoadingService } from './ngx-spinner-loading.service';
+import { NgStyle, NgClass , NgIf, NgTemplateOutlet } from '@angular/common';
 
 @Component({
-  selector: 'ngx-smart-loading',
+  selector: 'ngx-spinner-loader',
   standalone: true,
-  imports: [CommonModule],
+  imports: [NgStyle, NgClass, NgIf, NgTemplateOutlet],
   template: `
-    <div *ngIf="isVisible()" class="smart-overlay" [ngClass]="modeClass()" [ngStyle]="spinnerStyle()">
-      <ng-container *ngIf="!template">
-        <div class="default-spinner" [ngStyle]="animationStyle()"></div>
-      </ng-container>
-      <ng-container *ngIf="template">
-        <ng-container *ngTemplateOutlet="template"></ng-container>
-      </ng-container>
+    <div *ngIf="visible()" [ngClass]="containerClass" [style.zIndex]="zIndex">
+      <ng-container *ngIf="type === 'custom' && template; else builtInLoader"
+                    [ngTemplateOutlet]="template"></ng-container>
+
+      <ng-template #builtInLoader>
+        <div class="loader" [ngStyle]="loaderStyle()" [ngClass]="typeClass"></div>
+      </ng-template>
     </div>
   `,
-  styles: [`
-    .smart-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.3);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
-    }
-    .default-spinner {
-      border: 4px solid rgba(0,0,0,0.1);
-      border-top: 4px solid #000;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-  `]
+  styleUrls: ['./ngx-spinner-loading.component.css']
 })
-export class NgxSpinnerLoadingComponent {
-  private service = inject(NgxSpinnerLoadingService);
-  config = this.service.getConfig();
+export class NgxSpinnerLoaderComponent implements OnInit {
+  private service = inject(NgxSpinnerLoadingLoadingService);
 
-  @Input() template?: any;
+  @Input() manual = false;
+  @Input() type: 'spinner' | 'dots' | 'bar' | 'circle' | 'custom' = 'spinner';
+  @Input() size: 'xs' | 'sm' | 'md' | 'lg' | 'xl' = 'md';
+  @Input() color: string = '#3498db';
+  @Input() mode: 'fullscreen' | 'section' | 'inline' = 'fullscreen';
+  @Input() speed = 1;
+  @Input() timeout?: number;
+  @Input() zIndex = 9999;
+  @ContentChild(TemplateRef) template?: TemplateRef<any>;
 
-  isVisible = this.service.isLoading;
+  visible = this.manual ? () => true : this.service.isLoading;
 
-  modeClass = computed(() => {
-    const mode = this.config()?.mode || 'fullscreen';
-    return mode === 'fullscreen' ? 'smart-overlay' : '';
-  });
+  ngOnInit(): void {
+    if (this.timeout && !this.manual) {
+      effect(() => {
+        if (this.visible()) {
+          setTimeout(() => this.service.hide(), this.timeout);
+        }
+      });
+    }
+  }
 
-  spinnerStyle = computed(() => ({
-    'background-color': 'transparent',
-    color: this.config()?.color || '#000',
-    width: this.getSize(),
-    height: this.getSize(),
-  }));
+  get containerClass(): string {
+    switch (this.mode) {
+      case 'fullscreen':
+        return 'ngx-loader-fullscreen';
+      case 'section':
+        return 'ngx-loader-section';
+      case 'inline':
+        return 'ngx-loader-inline';
+    }
+  }
 
-  animationStyle = computed(() => ({
-    animationDuration: this.config()?.speed || '1s',
-  }));
+  get typeClass(): string {
+    return `loader-${this.type}`;
+  }
 
-  private getSize(): string {
-    const size = this.config()?.size || 'medium';
-    if (size === 'small') return '20px';
-    if (size === 'large') return '60px';
-    return '40px';
+  loaderStyle(): Record<string, string> {
+    const sizeMap: Record<string, string> = {
+      xs: '20px', sm: '30px', md: '40px', lg: '50px', xl: '70px'
+    };
+    return {
+      borderColor: this.color,
+      width: sizeMap[this.size],
+      height: sizeMap[this.size],
+      animationDuration: `${1 / this.speed}s`
+    };
   }
 }

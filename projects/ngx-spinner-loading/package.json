@@ -1,6 +1,27 @@
 {
   "name": "ngx-spinner-loading",
-  "version": "0.0.1",
+  "version": "1.0.1",
+  "description": "A lightweight Angular loading spinner package with full customization and HTTP interceptor support.",
+  "author": "Thasleeh CM",
+  "license": "MIT",
+  "keywords": [
+    "angular",
+    "loading",
+    "spinner",
+    "loader",
+    "ngx",
+    "http-interceptor",
+    "standalone",
+    "custom-loader"
+  ],
+  "homepage": "https://github.com/thalsi/ngx-spinner-loading",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thalsi/ngx-spinner-loading.git"
+  },
+  "bugs": {
+    "url": "https://github.com/thalsi/ngx-spinner-loading/issues"
+  },
   "peerDependencies": {
     "@angular/common": "^19.2.0",
     "@angular/core": "^19.2.0"
@@ -8,5 +29,13 @@
   "dependencies": {
     "tslib": "^2.3.0"
   },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "default": "./fesm2022/ngx-spinner-loading.mjs"
+    }
+  },
+  "module": "fesm2022/ngx-spinner-loading.mjs",
+  "typings": "index.d.ts",
   "sideEffects": false
 }
