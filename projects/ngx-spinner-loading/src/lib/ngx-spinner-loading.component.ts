@@ -2,7 +2,7 @@ import {
   Component, Input, TemplateRef, inject, effect,
   ContentChild, OnInit
 } from '@angular/core';
-import { NgxSpinnerLoadingLoadingService } from './ngx-spinner-loading.service';
+import { NgxSpinnerLoadingService } from './ngx-spinner-loading.service';
 import { NgStyle, NgClass , NgIf, NgTemplateOutlet } from '@angular/common';
 
 @Component({
@@ -22,7 +22,7 @@ import { NgStyle, NgClass , NgIf, NgTemplateOutlet } from '@angular/common';
   styleUrls: ['./ngx-spinner-loading.component.css']
 })
 export class NgxSpinnerLoaderComponent implements OnInit {
-  private service = inject(NgxSpinnerLoadingLoadingService);
+  private service = inject(NgxSpinnerLoadingService);
 
   @Input() manual = false;
   @Input() type: 'spinner' | 'dots' | 'bar' | 'circle' | 'custom' = 'spinner';

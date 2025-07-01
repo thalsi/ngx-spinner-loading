@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 
 @Injectable({ providedIn: 'root' })
-export class NgxSpinnerLoadingLoadingService {
+export class NgxSpinnerLoadingService {
   private loadingCount = signal(0);
   isLoading = signal(false);
 
