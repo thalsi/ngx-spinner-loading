@@ -1,9 +1,8 @@
 import {
-  Component, Input, TemplateRef, inject, effect,
-  ContentChild
+  Component, Input, TemplateRef, inject, effect, ContentChild
 } from '@angular/core';
 import { NgxSpinnerLoadingService } from './ngx-spinner-loading.service';
-import { NgStyle, NgClass , NgIf, NgTemplateOutlet } from '@angular/common';
+import { NgStyle, NgClass, NgIf, NgTemplateOutlet } from '@angular/common';
 
 @Component({
   selector: 'ngx-spinner-loader',
@@ -35,12 +34,17 @@ export class NgxSpinnerLoaderComponent {
   @ContentChild(TemplateRef) template?: TemplateRef<any>;
 
   visible = this.manual ? () => true : this.service.isLoading;
+  private timeoutStarted = false;
 
   constructor() {
     if (!this.manual && this.timeout) {
       effect(() => {
-        if (this.visible()) {
-          setTimeout(() => this.service.hide(), this.timeout);
+        if (this.visible() && !this.timeoutStarted) {
+          this.timeoutStarted = true;
+          setTimeout(() => {
+            this.service.hide();
+            this.timeoutStarted = false;
+          }, this.timeout);
         }
       });
     }
@@ -55,7 +59,8 @@ export class NgxSpinnerLoaderComponent {
   }
 
   get typeClass(): string {
-    return `loader-${this.type}`;
+    const validTypes = ['spinner', 'dots', 'bar', 'circle'];
+    return validTypes.includes(this.type) ? `loader-${this.type}` : 'loader-spinner';
   }
 
   loaderStyle(): Record<string, string> {
@@ -63,7 +68,8 @@ export class NgxSpinnerLoaderComponent {
       xs: '20px', sm: '30px', md: '40px', lg: '50px', xl: '70px'
     };
     return {
-      borderColor: this.color,
+      border: '4px solid #ccc',
+      borderTopColor: this.color,
       width: sizeMap[this.size],
       height: sizeMap[this.size],
       animationDuration: `${1 / this.speed}s`

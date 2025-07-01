@@ -77,11 +77,22 @@ export class AppComponent { }
 ```
 
 ```ts
-constructor(private loading: NgxSpinnerLoadingService) {}
+import { Component } from '@angular/core';
+import { NgxSpinnerLoaderComponent, NgxSpinnerLoadingService } from 'ngx-spinner-loading';
 
-startLoad() {
-  this.loading.show();
-  setTimeout(() => this.loading.hide(), 3000);
+@Component({
+  selector: 'app-root',
+  imports: [NgxSpinnerLoaderComponent],
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.css'
+})
+export class AppComponent { 
+  constructor(private loading: NgxSpinnerLoadingService) {}
+
+  startLoad() {
+    this.loading.show();
+    setTimeout(() => this.loading.hide(), 3000);
+  }
 }
 ```
 

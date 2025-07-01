@@ -1,4 +1,3 @@
-/* Common layout */
 .ngx-loader-fullscreen {
   position: fixed;
   top: 0;
@@ -22,7 +21,6 @@
   justify-content: center;
 }
 
-/* Built-in loader types */
 .loader {
   border: 4px solid #ccc;
   border-radius: 50%;
@@ -30,13 +28,11 @@
   animation: spin 1s linear infinite;
 }
 
-.loader-spinner {
-  animation-name: spin;
-}
 .loader-dots::after {
   content: "...";
   animation: blink 1s step-start infinite;
 }
+
 .loader-bar {
   width: 100px;
   height: 6px;
