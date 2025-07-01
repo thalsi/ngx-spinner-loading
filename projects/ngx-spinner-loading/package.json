@@ -1,6 +1,6 @@
 {
   "name": "ngx-spinner-loading",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A lightweight Angular loading spinner package with full customization and HTTP interceptor support.",
   "author": "Thasleeh CM",
   "license": "MIT",
