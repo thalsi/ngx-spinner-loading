@@ -44,6 +44,19 @@ bootstrapApplication(AppComponent, {
 ></ngx-spinner-loader>
 ```
 
+```ts
+import { Component } from '@angular/core';
+import { NgxSpinnerLoaderComponent } from 'ngx-spinner-loading';
+
+@Component({
+  selector: 'app-root',
+  imports: [NgxSpinnerLoaderComponent],
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.css'
+})
+export class AppComponent { }
+```
+
 ## ⚙️ Inputs – Customization
 
 | Input      | Type                                                   | Default        | Description                                          |

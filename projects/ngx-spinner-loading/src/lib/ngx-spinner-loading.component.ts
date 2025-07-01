@@ -1,6 +1,6 @@
 import {
   Component, Input, TemplateRef, inject, effect,
-  ContentChild, OnInit
+  ContentChild
 } from '@angular/core';
 import { NgxSpinnerLoadingService } from './ngx-spinner-loading.service';
 import { NgStyle, NgClass , NgIf, NgTemplateOutlet } from '@angular/common';
@@ -21,7 +21,7 @@ import { NgStyle, NgClass , NgIf, NgTemplateOutlet } from '@angular/common';
   `,
   styleUrls: ['./ngx-spinner-loading.component.css']
 })
-export class NgxSpinnerLoaderComponent implements OnInit {
+export class NgxSpinnerLoaderComponent {
   private service = inject(NgxSpinnerLoadingService);
 
   @Input() manual = false;
@@ -36,8 +36,8 @@ export class NgxSpinnerLoaderComponent implements OnInit {
 
   visible = this.manual ? () => true : this.service.isLoading;
 
-  ngOnInit(): void {
-    if (this.timeout && !this.manual) {
+  constructor() {
+    if (!this.manual && this.timeout) {
       effect(() => {
         if (this.visible()) {
           setTimeout(() => this.service.hide(), this.timeout);
@@ -48,12 +48,9 @@ export class NgxSpinnerLoaderComponent implements OnInit {
 
   get containerClass(): string {
     switch (this.mode) {
-      case 'fullscreen':
-        return 'ngx-loader-fullscreen';
-      case 'section':
-        return 'ngx-loader-section';
-      case 'inline':
-        return 'ngx-loader-inline';
+      case 'fullscreen': return 'ngx-loader-fullscreen';
+      case 'section': return 'ngx-loader-section';
+      case 'inline': return 'ngx-loader-inline';
     }
   }
 

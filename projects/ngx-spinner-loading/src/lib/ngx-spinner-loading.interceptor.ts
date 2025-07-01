@@ -5,7 +5,7 @@ import { HttpInterceptorFn } from '@angular/common/http';
 import { finalize } from 'rxjs';
 import { NgxSpinnerLoadingService } from './ngx-spinner-loading.service';
 
-export const ngxSpinnerLoadingInterceptor: HttpInterceptorFn = (req, next) => {
+export const NgxSpinnerLoadingInterceptor: HttpInterceptorFn = (req, next) => {
     const loadingService = inject(NgxSpinnerLoadingService);
 
     loadingService.show();
