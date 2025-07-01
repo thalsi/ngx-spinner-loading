@@ -1,7 +1,7 @@
 import {
     Directive, Input, TemplateRef, ViewContainerRef, inject
 } from '@angular/core';
-import { NgxSpinnerLoadingLoadingService } from './ngx-spinner-loading.service';
+import { NgxSpinnerLoadingService } from './ngx-spinner-loading.service';
 
 @Directive({
     selector: '[ngxSpinnerLoading]',
@@ -10,7 +10,7 @@ import { NgxSpinnerLoadingLoadingService } from './ngx-spinner-loading.service';
 export class NgxSpinnerLoadingDirective {
     private tmpl = inject(TemplateRef<unknown>);
     private vcr = inject(ViewContainerRef);
-    private service = inject(NgxSpinnerLoadingLoadingService);
+    private service = inject(NgxSpinnerLoadingService);
 
     @Input('ngxSpinnerLoading') set loading(condition: boolean) {
         this.vcr.clear();
